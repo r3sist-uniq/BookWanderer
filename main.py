@@ -1,45 +1,46 @@
 import sys
 import util 
-import requests
-from bs4 import BeautifulSoup
 
 args = sys.argv
-print(args[1])
-
 
 book_name = args[1]
 author_name = args[2]
+top_scores = args[3]
 
+all_books_found = []
+main_book = []
+# google books metadata
 metadata = util.get_book_metadata(book_name + ' ' + author_name)
-if metadata is not None:
-    print('Pages:', metadata['pages'])
-else:
-    print('No search results found.')
+main_book.append(metadata)
+
+# google search   
+google_search_results = util.search_google_for_book_pds(book_name)
+if not (google_search_results):
+    print('No google search results for some reason')
+else: all_books_found += google_search_results
+
+#libgen
+libgen_results = util.libgen_search_and_scrape(book_name=book_name, author_name=author_name)
+if not (libgen_results):
+    print('No libgen search results for some reason')
+else: all_books_found += libgen_results
 
 
-pdf_drive_url = f'https://www.pdfdrive.com/search?q={book_name} {author_name}&searchin=&pagecount=&pubyear=&orderby='
-pdf_drive_page = requests.get(pdf_drive_url)
+#pdf drive
+pdf_drive_results = util.search_pdf_drive(book_name=book_name, author_name=author_name)
+all_books_found += pdf_drive_results
+if not (pdf_drive_results):
+    print('No pdf drive search results for some reason')
+else: all_books_found += pdf_drive_results
 
-soup = BeautifulSoup(pdf_drive_page.content, 'html.parser')
-results = soup.findAll('a', attrs={'class': 'ai-search'})
+print(len(all_books_found), 'before removing duplicates')
 
-for i, result in enumerate(results):
-    print(i, result.parent)
-    pagecount = result.parent.find('span', {'class': 'fi-pagecount'})
-    print(pagecount.text)
-    print('-----------------------------------------')
-    title = result.find('h2').text
-    link = 'https://www.pdfdrive.com'+ result['href']
-    # print(i, title, '-', link)
-        
-    # search_results = util.search_google_for_book_pds(book_name)
-# for item in search_results:
-#     title = item.get('title')
-#     link = item.get('link')
-#     snippet = item.get('snippet')
-    
-#     # Print out the search result data
-#     print(f'Title: {title}')
-#     print(f'Link: {link}')
-#     print(f'Snippet: {snippet}')
-    
+all_book_strings = util.process_array_of_dictionaries(all_books_found)
+all_book_strings = list(set(all_book_strings))
+print(len(all_book_strings), 'after removing duplicates')
+
+main_book_string = util.process_array_of_dictionaries(main_book)[0]
+topp = util.get_top_matches(main_string=main_book_string, string_array=all_book_strings, top_k=int(top_scores))
+for i in topp:
+    print(i)
+    print('-----------------------------')
