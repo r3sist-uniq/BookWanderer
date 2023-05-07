@@ -24,7 +24,6 @@ def get_book_metadata(book_name):
     if 'items' in response_data and len(response_data['items']) > 0:
         # Extract the metadata for the first book in the search results
         book_metadata = response_data['items'][0]['volumeInfo']
-        
         # Return the book metadata
         return book_metadata
     else:
@@ -56,14 +55,52 @@ def search_google_for_book_pds(book):
         
         return books_found
     else:
-        print('no google search results found')
-        
+        print('no google search results found')                                  
 
-def libgen_search_and_scrape(book_name, author_name):
+def search_pdf_drive_and_scrape(book_name, author_name):
+    all_books = []
+    pdf_drive_url = f'https://www.pdfdrive.com/search?q={book_name} {author_name}&searchin=&pagecount=&pubyear=&orderby='
+    pdf_drive_page = requests.get(pdf_drive_url)
+
+    soup = BeautifulSoup(pdf_drive_page.content, 'html.parser')
+    results = soup.findAll('a', attrs={'class': 'ai-search'})
+
+    for i, result in enumerate(results):
+        everything = result.parent.text.split() #everything - pages, title, and description some
+        link = 'https://www.pdfdrive.com'+ result['href'] #link
+        
+        book = {'title': " ".join(everything), link: link, 'source': 'pdf drive'}
+        all_books.append(book)
+
+    return all_books
+
+
+
+def create_string_out_of_dictionary(dictionary):
+    result = ""
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            result += str(key)+ " " + create_string_out_of_dictionary(value)
+        else:
+            result += str(key) + " " + str(value)
+    return result.strip()
+
+def process_array_of_dictionaries(array):
+    result_array = []
+    for dictionary in array:
+        result_string = create_string_out_of_dictionary(dictionary)
+        result_array.append(result_string)
+    return result_array
+
+
+def libgen_search_and_scrape(name, query):
     s = LibgenSearch()
     all_books = []
-    author_filters = {"Author": author_name}
-    titles = s.search_title(book_name)
+    if query == 'author':
+        titles = s.search_author(name)
+    elif query == 'book':
+        titles = s.search_title(name)
+    
     link_pattern =  r"https?://[^\s]*library\.lol[^\s]*"
 
     for title in titles:
@@ -100,39 +137,4 @@ def libgen_search_and_scrape(book_name, author_name):
         all_books.append(book)
     
     return all_books
-                                    
 
-def search_pdf_drive_and_scrape(book_name, author_name):
-    all_books = []
-    pdf_drive_url = f'https://www.pdfdrive.com/search?q={book_name} {author_name}&searchin=&pagecount=&pubyear=&orderby='
-    pdf_drive_page = requests.get(pdf_drive_url)
-
-    soup = BeautifulSoup(pdf_drive_page.content, 'html.parser')
-    results = soup.findAll('a', attrs={'class': 'ai-search'})
-
-    for i, result in enumerate(results):
-        # pagecount = result.parent.find('span', {'class': 'fi-pagecount'}).text
-        # title = result.find('h2').text
-        everything = result.parent.text.split() #everything - pages, title, and description some
-        link = 'https://www.pdfdrive.com'+ result['href'] #link
-        
-        book = {'title': " ".join(everything), link: link, 'source': 'pdf drive'}
-        all_books.append(book)
-
-    return all_books
-
-def create_string_out_of_dictionary(dictionary):
-    result = ""
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            result += str(key)+ " " + create_string_out_of_dictionary(value)
-        else:
-            result += str(key) + " " + str(value)
-    return result.strip()
-
-def process_array_of_dictionaries(array):
-    result_array = []
-    for dictionary in array:
-        result_string = create_string_out_of_dictionary(dictionary)
-        result_array.append(result_string)
-    return result_array
