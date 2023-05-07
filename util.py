@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 import re, requests
 from bs4 import BeautifulSoup
 from libgen_api import LibgenSearch
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 load_dotenv()
@@ -104,7 +102,7 @@ def libgen_search_and_scrape(book_name, author_name):
     return all_books
                                     
 
-def search_pdf_drive(book_name, author_name):
+def search_pdf_drive_and_scrape(book_name, author_name):
     all_books = []
     pdf_drive_url = f'https://www.pdfdrive.com/search?q={book_name} {author_name}&searchin=&pagecount=&pubyear=&orderby='
     pdf_drive_page = requests.get(pdf_drive_url)
@@ -138,20 +136,3 @@ def process_array_of_dictionaries(array):
         result_string = create_string_out_of_dictionary(dictionary)
         result_array.append(result_string)
     return result_array
-
-
-def get_top_matches(main_string, string_array, top_k=5):
-    # Load pre-trained SentenceTransformer model
-    model = SentenceTransformer('all-MiniLM-L12-v2')
-    # Encode the main string
-    main_string_embedding = model.encode([main_string])
-    # Encode the strings in the array
-    string_embeddings = model.encode(string_array)
-    # Calculate cosine similarity between the main string and the array of strings
-    similarity_scores = cosine_similarity(main_string_embedding, string_embeddings)[0]
-    # Sort the strings based on their similarity scores in descending order
-    sorted_indices = sorted(range(len(similarity_scores)), key=lambda k: similarity_scores[k], reverse=True)
-    # Get the top k matches
-    top_matches = [(string_array[i], similarity_scores[i]) for i in sorted_indices[:top_k]]
-
-    return top_matches

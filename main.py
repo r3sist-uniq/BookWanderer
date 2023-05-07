@@ -9,6 +9,8 @@ top_scores = args[3]
 
 all_books_found = []
 main_book = []
+
+
 # google books metadata
 metadata = util.get_book_metadata(book_name + ' ' + author_name)
 main_book.append(metadata)
@@ -27,20 +29,18 @@ else: all_books_found += libgen_results
 
 
 #pdf drive
-pdf_drive_results = util.search_pdf_drive(book_name=book_name, author_name=author_name)
+pdf_drive_results = util.search_pdf_drive_and_scrape(book_name=book_name, author_name=author_name)
 all_books_found += pdf_drive_results
 if not (pdf_drive_results):
     print('No pdf drive search results for some reason')
 else: all_books_found += pdf_drive_results
 
-print(len(all_books_found), 'before removing duplicates')
+
 
 all_book_strings = util.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
+
+print(len(all_books_found), 'before removing duplicates')
 print(len(all_book_strings), 'after removing duplicates')
 
 main_book_string = util.process_array_of_dictionaries(main_book)[0]
-topp = util.get_top_matches(main_string=main_book_string, string_array=all_book_strings, top_k=int(top_scores))
-for i in topp:
-    print(i)
-    print('-----------------------------')
