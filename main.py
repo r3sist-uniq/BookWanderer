@@ -3,7 +3,11 @@ import utils
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
-import re
+import os 
+import requests 
+from bs4 import BeautifulSoup
+
+
 
 
 load_dotenv()
@@ -74,19 +78,29 @@ top_book_raw = get_top_matches(main_book_string, all_book_strings, int(top_score
 input_urls = utils.extract_urls(top_book_raw)
 output_list = [tuple(filter(None, tpl)) for tpl in input_urls]
 final_urls = utils.extract_urls(output_list)
-print(len(final_urls))
+
+to_download_urls = utils.final_webpage_links(final_urls)
+to_download_urls_final = utils.cleaning(to_download_urls)
+
+
+
+for i, url in enumerate(to_download_urls_final):
+    if "library" in url:
+        utils.final_download_libgen(url)
+    elif "pdfdrive" in url:
+        utils.final_download_pdfdrive(url)
+    else:
+        utils.final_download_google(url)
 
 
 
 
+# TO CHECK IF THE LAST URLS ARE ACTUALLY FROM RESPECTIVE INDEX OF TUPLES
+# for i, urls in enumerate(final_urls):
+#     if to_download_urls[i] in urls:
+#         print(f"true {i+1}st time")
+#     else:
+#         print("wtf")
 
-
-
-
-# final_urls = []
-# for url in output_list:
-#     extracted_url = re.search("(?P<url>https?://[^\s]+)", url[0]).group("url")
-#     final_urls.append(extracted_url)
-# print(final_urls)
 
 
