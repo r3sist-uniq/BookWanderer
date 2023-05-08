@@ -156,11 +156,15 @@ def extract_urls(arr):
         urls.append(tuple(url_tuple))
     return urls
 
-# def extract_urls(arr):
-#     urls = []
-#     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-#     for tup in arr:
-#         for string in tup:
-#             if isinstance(string, str):
-#                 urls.extend(re.findall(regex, string))
-#     return urls
+def final_webpage_links(arr): 
+    to_download_urls = []
+    for i, urls in enumerate(arr):
+        for url in urls:
+            response = requests.head(url)
+            if response.status_code == 200:
+                print(f"Downloading file from {url}")
+                to_download_urls.append(url)
+                break
+        else:
+            print(f"No link works from tuple number {i+1}")
+    return to_download_urls

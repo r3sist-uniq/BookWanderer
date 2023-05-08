@@ -6,3 +6,7 @@ match google book thumbail (clip embedding) with other sites thumbnails too hehe
 URL with top index: 
   1. every index URL try (if not then other url) or if noone work then (Link doesn't work) 
   2. file downloading - path specify 
+
+A. CHANGE e to d in PDF DRIVE LINKS
+B. libgen simple click cloudfare 
+C. google simple click that link
