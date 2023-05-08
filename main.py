@@ -70,13 +70,23 @@ def get_top_matches(main_string, string_array, top_k=5):
     return top_matches
 
 top_book_raw = get_top_matches(main_book_string, all_book_strings, int(top_scores))
+
 input_urls = utils.extract_urls(top_book_raw)
 output_list = [tuple(filter(None, tpl)) for tpl in input_urls]
-print(output_list)
+final_urls = utils.extract_urls(output_list)
+print(len(final_urls))
 
 
-# for i in ok:
-#     print(i)
-#     print('-----------------------------------------')
+
+
+
+
+
+
+# final_urls = []
+# for url in output_list:
+#     extracted_url = re.search("(?P<url>https?://[^\s]+)", url[0]).group("url")
+#     final_urls.append(extracted_url)
+# print(final_urls)
 
 

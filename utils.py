@@ -144,8 +144,23 @@ def libgen_search_and_scrape(name, query):
 def extract_urls(arr):
     urls = []
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+    
     for tup in arr:
+        url_tuple = []
         for string in tup:
             if isinstance(string, str):
-                urls.extend(re.findall(regex, string))
+                found_urls = re.findall(regex, string)
+                for url in found_urls:
+                    extracted_url = re.search("(?P<url>https?://[^\s]+)", url[0]).group("url")
+                    url_tuple.append(extracted_url)
+        urls.append(tuple(url_tuple))
     return urls
+
+# def extract_urls(arr):
+#     urls = []
+#     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+#     for tup in arr:
+#         for string in tup:
+#             if isinstance(string, str):
+#                 urls.extend(re.findall(regex, string))
+#     return urls
