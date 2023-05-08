@@ -2,7 +2,11 @@ import sys
 import utils
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from dotenv import load_dotenv
+import re
 
+
+load_dotenv()
 args = sys.argv
 
 book_name = args[1]
@@ -13,8 +17,6 @@ if args[3] is None:
 else: top_scores = args[3]
 
 all_books_found = []
-
-
 main_book = []
 
 
@@ -46,6 +48,7 @@ all_books_found += pdf_drive_results
 if not (pdf_drive_results):
     print('No pdf drive search results for some reason')
 else: all_books_found += pdf_drive_results
+# ------------------------------------------------------------------------
 
 all_book_strings = utils.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
@@ -66,9 +69,14 @@ def get_top_matches(main_string, string_array, top_k=5):
 
     return top_matches
 
-ok = get_top_matches(main_book_string, all_book_strings, int(top_scores))
-for i in ok:
-    print(i)
-    print('-----------------------------------------')
+top_book_raw = get_top_matches(main_book_string, all_book_strings, int(top_scores))
+input_urls = utils.extract_urls(top_book_raw)
+output_list = [tuple(filter(None, tpl)) for tpl in input_urls]
+print(output_list)
+
+
+# for i in ok:
+#     print(i)
+#     print('-----------------------------------------')
 
 

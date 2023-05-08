@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 import re, requests
 from bs4 import BeautifulSoup
 from libgen_api import LibgenSearch
+import os 
 
 
 load_dotenv()
+api_key_google = os.getenv('API_KEY_GOOGLE')
+search_engine_id = os.getenv('SEARCH_ENGINE_ID')
 
 def get_book_metadata(book_name):
     # Set up the API endpoint and parameters
@@ -34,8 +37,8 @@ def search_google_for_book_pds(book):
     books_found = []
     url = 'https://www.googleapis.com/customsearch/v1'
     params = {
-        'key': os.environ['api_key_google'],
-        'cx': os.environ['search_engine_id'],  
+        'key': api_key_google,
+        'cx': search_engine_id,  
         'q': f'filetype:pdf ${book}',
         'num': 10  # Set the number of search results to retrieve
     }
@@ -80,9 +83,9 @@ def create_string_out_of_dictionary(dictionary):
     result = ""
     for key, value in dictionary.items():
         if isinstance(value, dict):
-            result += str(key)+ " " + create_string_out_of_dictionary(value)
+            result += str(key)+ " " + create_string_out_of_dictionary(value) + " "
         else:
-            result += str(key) + " " + str(value)
+            result += str(key) + " " + str(value) + " "
     return result.strip()
 
 def process_array_of_dictionaries(array):
@@ -138,3 +141,11 @@ def libgen_search_and_scrape(name, query):
     
     return all_books
 
+def extract_urls(arr):
+    urls = []
+    regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+    for tup in arr:
+        for string in tup:
+            if isinstance(string, str):
+                urls.extend(re.findall(regex, string))
+    return urls
