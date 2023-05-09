@@ -194,7 +194,12 @@ def final_download_libgen(link):
     final_link = a_element["href"]
     print(final_link)
 
+    local_path = "/path/to/local/directory/file.pdf" 
+
+
 def final_download_pdfdrive(link):
+
+    # PDFDRIVE seems fucking down 
     return
 
 def final_download_google(link):
