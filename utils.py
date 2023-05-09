@@ -8,8 +8,9 @@ import os
 
 
 load_dotenv()
-api_key_google = os.getenv('API_KEY_GOOGLE')
-search_engine_id = os.getenv('SEARCH_ENGINE_ID')
+
+api_key_google = os.getenv('api_key_google')
+search_engine_id = os.getenv('search_engine_id')
 
 def get_book_metadata(book_name):
     # Set up the API endpoint and parameters
@@ -45,7 +46,6 @@ def search_google_for_book_pds(book):
     # Send the API request and retrieve the response
     response = requests.get(url, params=params)
     response_data = response.json()
-
     # Process the search results
     if 'items' in response_data:
         for item in response_data['items']:
@@ -90,55 +90,59 @@ def create_string_out_of_dictionary(dictionary):
 def process_array_of_dictionaries(array):
     result_array = []
     for dictionary in array:
+        print(dictionary, 'hello?')
         result_string = create_string_out_of_dictionary(dictionary)
         result_array.append(result_string)
     return result_array
 
 
 def libgen_search_and_scrape(name, query):
-    s = LibgenSearch()
-    all_books = []
-    if query == 'author':
-        titles = s.search_author(name)
-    elif query == 'book':
-        titles = s.search_title(name)
-    
-    link_pattern =  r"https?://[^\s]*library\.lol[^\s]*"
+    try:
+        s = LibgenSearch()
+        all_books = []
+        if query == 'author':
+            titles = s.search_author(name)
+        elif query == 'book':
+            titles = s.search_title(name)
+        
+        link_pattern =  r"https?://[^\s]*library\.lol[^\s]*"
 
-    for title in titles:
-        description_main = None
-        isbn_main = None
-        try: 
-            mirror_links = [title['Mirror_1'], title['Mirror_2'], title['Mirror_3']]
-            for link in mirror_links:
+        for title in titles:
+            description_main = None
+            isbn_main = None
+            try: 
+                mirror_links = [title['Mirror_1'], title['Mirror_2'], title['Mirror_3']]
+                for link in mirror_links:
 
-                if (re.search(link_pattern, link)):
-                # download the HTML content of the page
-                    response = requests.get(link)
-                    response.raise_for_status()
-                    
-                    html_content = response.content
-                    soup = BeautifulSoup(html_content, 'html.parser')
-                    
-                    if isbn_main is None:   
-                        isbn = soup.find(lambda tag: "ISBN" in tag.string if tag.string else False).text.split(':')[1].strip() #http://library.lol/main/178EFA8D7182F64E6ACA15457C430745
-                        isbn_main = isbn
-                    if description_main is None:
-                        description = soup.find(string=re.compile("Description")).find_parent().text #library.lol/main
-                        description_main = description
-        except Exception:
-            pass
-            # print('Error in Libgen', Exception)
-            
-        book = title.copy()
-        book['source'] = 'libgen'
-        if description_main is not None:
-            book['description'] = description_main
-        if isbn_main is not None:
-            book['isbn'] = isbn_main
-        all_books.append(book)
-    
-    return all_books
+                    if (re.search(link_pattern, link)):
+                    # download the HTML content of the page
+                        response = requests.get(link)
+                        response.raise_for_status()
+                        
+                        html_content = response.content
+                        soup = BeautifulSoup(html_content, 'html.parser')
+                        
+                        if isbn_main is None:   
+                            isbn = soup.find(lambda tag: "ISBN" in tag.string if tag.string else False).text.split(':')[1].strip() #http://library.lol/main/178EFA8D7182F64E6ACA15457C430745
+                            isbn_main = isbn
+                        if description_main is None:
+                            description = soup.find(string=re.compile("Description")).find_parent().text #library.lol/main
+                            description_main = description
+            except Exception:
+                pass
+                # print('Error in Libgen', Exception)
+            book = title.copy()
+            book['source'] = 'libgen'
+            if description_main is not None:
+                book['description'] = description_main
+            if isbn_main is not None:
+                book['isbn'] = isbn_main
+            all_books.append(book)
+        
+        return all_books
+    except Exception:
+        print('sending false', Exception)
+        return False
 
 def extract_urls(arr):
     urls = []
@@ -161,15 +165,11 @@ def final_webpage_links(arr):
         for url in urls:
             response = requests.head(url)
             if response.status_code == 200:
-                print(f"Downloading file from {url}")
                 to_download_urls.append(url)
                 break
         else:
             print(f"No link works from tuple number {i+1}")
     return to_download_urls
-
-
-
 
 def cleaning(bad_urls):
     updated_links = []
@@ -180,10 +180,6 @@ def cleaning(bad_urls):
             updated_links.append(link)
     return updated_links
 
-
-
-
-
 def final_download_libgen(link):
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -191,11 +187,12 @@ def final_download_libgen(link):
     li_element = ul_element.find("li")
     a_element = li_element.find("a")
     final_link = a_element["href"]
-    print(final_link)
+    return final_link
+    # print(final_link)
 
 def final_download_pdfdrive(link):
     # PDFDRIVE seems fucking down 
-    return
+    return link
 
 def final_download_google(link):
-    return
+    return link

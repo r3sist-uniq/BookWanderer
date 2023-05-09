@@ -3,12 +3,6 @@ import utils
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
-import os 
-import requests 
-from bs4 import BeautifulSoup
-
-
-
 
 load_dotenv()
 args = sys.argv
@@ -23,8 +17,8 @@ else: top_scores = args[3]
 all_books_found = []
 main_book = []
 
-
-# google books metadata
+print(book_name, author_name, top_scores)
+# google books metadata 
 metadata = utils.get_book_metadata(book_name + ' ' + author_name)
 main_book.append(metadata)
 
@@ -35,15 +29,37 @@ if not (google_search_results):
 else: all_books_found += google_search_results
 
 #libgen
-libgen_results = utils.libgen_search_and_scrape(name=book_name, query='book')
-if not (libgen_results):
-    print('No libgen search results for some reason')
-else: all_books_found += libgen_results
+book_libgen_found = False
+libgen_results_ = 0
+i = 0
+while (not book_libgen_found or i > 10):
+    i += 1
+    libgen_results = utils.libgen_search_and_scrape(name=book_name, query='book')
+    
+    if libgen_results == False:
+        book_libgen_found = False
+        print('wrongg happend', i)
+    else:
+        
+        book_libgen_found = True
+        libgen_results_ = libgen_results
 
-libgen_results_2 = utils.libgen_search_and_scrape(name=author_name, query='author')
-if not (libgen_results_2):
-    print('No libgen search results for some reason')
-else: all_books_found += libgen_results_2
+all_books_found += libgen_results_
+
+author_libgen_found = False
+libgen_results_2 = 0
+j = 0
+while (author_libgen_found is not True or j > 10):
+    j += 1
+    libgen_results = utils.libgen_search_and_scrape(name=author_name, query='author')
+    if libgen_results == False:
+        author_libgen_found = False
+        print('wrong happend author', j)
+    else:
+        author_libgen_found = True
+        libgen_results_2 = libgen_results
+        
+all_books_found += libgen_results_2       
 
 
 #pdf drive
@@ -52,8 +68,8 @@ all_books_found += pdf_drive_results
 if not (pdf_drive_results):
     print('No pdf drive search results for some reason')
 else: all_books_found += pdf_drive_results
-# ------------------------------------------------------------------------
 
+print(all_books_found, 'hello')
 all_book_strings = utils.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
 
@@ -82,17 +98,16 @@ final_urls = utils.extract_urls(output_list)
 to_download_urls = utils.final_webpage_links(final_urls)
 to_download_urls_final = utils.cleaning(to_download_urls)
 
-
-
+pakka_final_urls = []
 for i, url in enumerate(to_download_urls_final):
-    if "library" in url:
-        utils.final_download_libgen(url)
+    if "library.lol" in url:
+        pakka_final_urls.append(utils.final_download_libgen(url))
     elif "pdfdrive" in url:
-        utils.final_download_pdfdrive(url)
+        pakka_final_urls.append(utils.final_download_pdfdrive(url))
     else:
-        utils.final_download_google(url)
+        pakka_final_urls.append(utils.final_download_google(url))
 
-
+print(pakka_final_urls)
 
 
 # TO CHECK IF THE LAST URLS ARE ACTUALLY FROM RESPECTIVE INDEX OF TUPLES
@@ -101,3 +116,14 @@ for i, url in enumerate(to_download_urls_final):
 #         print(f"true {i+1}st time")
 #     else:
 #         print("wtf")
+
+
+# libgen_results = utils.libgen_search_and_scrape(name=book_name, query='book')
+# if not (libgen_results):
+#     print('No libgen search results for some reason')
+# else: all_books_found += libgen_results
+
+# libgen_results_2 = utils.libgen_search_and_scrape(name=author_name, query='author')
+# if not (libgen_results_2):
+#     print('No libgen search results for some reason')
+# else: all_books_found += libgen_results_2

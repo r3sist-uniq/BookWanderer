@@ -1,7 +1,0 @@
-2. the strings don't give individual information, so connect them with the original dictionaries
-3. how to download from URLS, downloading top books locally. 
-
-
-later ideas:
-
-match google book thumbail (clip embedding) with other sites thumbnails too hehehe
