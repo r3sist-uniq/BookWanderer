@@ -17,13 +17,14 @@ else: top_scores = args[3]
 all_books_found = []
 main_book = []
 
-print(book_name, author_name, top_scores)
 # google books metadata 
-metadata = utils.get_book_metadata(book_name + ' ' + author_name)
+metadata = utils.get_book_metadata(book_name, author_name)
 main_book.append(metadata)
-
+if metadata is None:
+    sys.exit('Could not find book in the Google Book Repository. Please check your book and author name')
+    
 # google search   
-google_search_results = utils.search_google_for_book_pds(book_name)
+google_search_results = utils.search_google_for_book_pds(book_name, author_name=author_name)
 if not (google_search_results):
     print('No google search results for some reason')
 else: all_books_found += google_search_results
@@ -69,7 +70,6 @@ if not (pdf_drive_results):
     print('No pdf drive search results for some reason')
 else: all_books_found += pdf_drive_results
 
-print(all_books_found, 'hello')
 all_book_strings = utils.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
 

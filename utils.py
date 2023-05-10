@@ -12,17 +12,16 @@ load_dotenv()
 api_key_google = os.getenv('api_key_google')
 search_engine_id = os.getenv('search_engine_id')
 
-def get_book_metadata(book_name):
+def get_book_metadata(book_name, authorname):
     # Set up the API endpoint and parameters
     url = 'https://www.googleapis.com/books/v1/volumes'
     params = {
-        'q': 'intitle:{}'.format(book_name)  # Set the book name as the query
-    }
-
+        'q': 'intitle:{}+inauthor:{}'.format(book_name, authorname)  # Set the book name as the query
+    }   
+    
     # Send the API request and retrieve the response
     response = requests.get(url, params=params)
     response_data = response.json()
-
     # Process the search results
     if 'items' in response_data and len(response_data['items']) > 0:
         # Extract the metadata for the first book in the search results
@@ -33,13 +32,13 @@ def get_book_metadata(book_name):
         return None
     
 
-def search_google_for_book_pds(book):
+def search_google_for_book_pds(book, author_name):
     books_found = []
     url = 'https://www.googleapis.com/customsearch/v1'
     params = {
         'key': api_key_google,
         'cx': search_engine_id,  
-        'q': f'filetype:pdf ${book}',
+        'q': f'filetype:pdf {book} {author_name}',
         'num': 10  # Set the number of search results to retrieve
     }
     
@@ -80,6 +79,7 @@ def search_pdf_drive_and_scrape(book_name, author_name):
 
 def create_string_out_of_dictionary(dictionary):
     result = ""
+
     for key, value in dictionary.items():
         if isinstance(value, dict):
             result += str(key)+ " " + create_string_out_of_dictionary(value) + " "
@@ -90,7 +90,8 @@ def create_string_out_of_dictionary(dictionary):
 def process_array_of_dictionaries(array):
     result_array = []
     for dictionary in array:
-        print(dictionary, 'hello?')
+        if dictionary == None:
+            continue
         result_string = create_string_out_of_dictionary(dictionary)
         result_array.append(result_string)
     return result_array
