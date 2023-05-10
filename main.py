@@ -23,7 +23,7 @@ main_book.append(metadata)
 if metadata is None:
     sys.exit('Could not find book in the Google Book Repository. Please check your book and author name')
 else:
-    print('Found Metadata in Google Books. Here is the Book found : {title}, {author} , {page_count}'.format(title=metadata['title'], author=metadata['authors'], page_count=metadata['pageCount']) )
+    print('Found Metadata in Google Books. Here is the Book found : {title}, {author} , Pages: {page_count}'.format(title=metadata['title'], author=metadata['authors'], page_count=metadata['pageCount']) )
 # google search   
 google_search_results = utils.search_google_for_book_pds(book_name, author_name=author_name)
 if not (google_search_results):
@@ -65,6 +65,7 @@ print("Libgen Author books found = {number}".format(number=len(libgen_results_2)
 all_books_found += libgen_results_2       
 
 
+
 #pdf drive
 pdf_drive_results = utils.search_pdf_drive_and_scrape(book_name=book_name, author_name=author_name)
 if not (pdf_drive_results):
@@ -74,9 +75,6 @@ print("PDF Drive books found = {number}".format(number=len(pdf_drive_results)))
 
 all_book_strings = utils.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
-
-print(len(all_books_found), 'before removing duplicates')
-print(len(all_book_strings), 'after removing duplicates')
 
 main_book_string = utils.process_array_of_dictionaries(main_book)[0]
 
@@ -92,7 +90,9 @@ def get_top_matches(main_string, string_array, top_k=5):
     return top_matches
 
 top_book_raw = get_top_matches(main_book_string, all_book_strings, int(top_scores))
-
+for i in top_book_raw:
+    print('Similarity scores: ', i[1])
+    
 input_urls = utils.extract_urls(top_book_raw)
 output_list = [tuple(filter(None, tpl)) for tpl in input_urls]
 final_urls = utils.extract_urls(output_list)

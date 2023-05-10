@@ -164,13 +164,20 @@ def final_webpage_links(arr):
     to_download_urls = []
     for i, urls in enumerate(arr):
         for url in urls:
-            response = requests.head(url)
+            
+            response = requests.head(url, verify=False)
             if response.status_code == 200:
                 to_download_urls.append(url)
                 break
         else:
             print(f"No link works from tuple number {i+1}")
     return to_download_urls
+
+
+# from urllib3.exceptions import InsecureRequestWarning
+# from urllib3 import disable_warnings
+
+# disable_warnings(InsecureRequestWarning)
 
 def cleaning(bad_urls):
     updated_links = []
