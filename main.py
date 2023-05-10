@@ -22,16 +22,18 @@ metadata = utils.get_book_metadata(book_name, author_name)
 main_book.append(metadata)
 if metadata is None:
     sys.exit('Could not find book in the Google Book Repository. Please check your book and author name')
-    
+else:
+    print('Found Metadata in Google Books. Here is the Book found : {title}, {author} , {page_count}'.format(title=metadata['title'], author=metadata['authors'], page_count=metadata['pageCount']) )
 # google search   
 google_search_results = utils.search_google_for_book_pds(book_name, author_name=author_name)
 if not (google_search_results):
     print('No google search results for some reason')
 else: all_books_found += google_search_results
+print("Google search results found = {number}".format(number=len(google_search_results)))
 
 #libgen
-book_libgen_found = False
-libgen_results_ = 0
+book_libgen_found = False   
+libgen_results_ = []
 i = 0
 while (not book_libgen_found or i > 10):
     i += 1
@@ -39,12 +41,12 @@ while (not book_libgen_found or i > 10):
     
     if libgen_results == False:
         book_libgen_found = False
-        print('wrongg happend', i)
     else:
         
         book_libgen_found = True
         libgen_results_ = libgen_results
 
+print("Libgen Title books found = {number}".format(number=len(libgen_results_)))
 all_books_found += libgen_results_
 
 author_libgen_found = False
@@ -55,20 +57,20 @@ while (author_libgen_found is not True or j > 10):
     libgen_results = utils.libgen_search_and_scrape(name=author_name, query='author')
     if libgen_results == False:
         author_libgen_found = False
-        print('wrong happend author', j)
     else:
         author_libgen_found = True
         libgen_results_2 = libgen_results
-        
+
+print("Libgen Author books found = {number}".format(number=len(libgen_results_2)))
 all_books_found += libgen_results_2       
 
 
 #pdf drive
 pdf_drive_results = utils.search_pdf_drive_and_scrape(book_name=book_name, author_name=author_name)
-all_books_found += pdf_drive_results
 if not (pdf_drive_results):
     print('No pdf drive search results for some reason')
 else: all_books_found += pdf_drive_results
+print("PDF Drive books found = {number}".format(number=len(pdf_drive_results)))
 
 all_book_strings = utils.process_array_of_dictionaries(all_books_found)
 all_book_strings = list(set(all_book_strings))
@@ -98,16 +100,16 @@ final_urls = utils.extract_urls(output_list)
 to_download_urls = utils.final_webpage_links(final_urls)
 to_download_urls_final = utils.cleaning(to_download_urls)
 
-pakka_final_urls = []
+last_urls = []
 for i, url in enumerate(to_download_urls_final):
     if "library.lol" in url:
-        pakka_final_urls.append(utils.final_download_libgen(url))
+        last_urls.append(utils.final_download_libgen(url))
     elif "pdfdrive" in url:
-        pakka_final_urls.append(utils.final_download_pdfdrive(url))
+        last_urls.append(utils.final_download_pdfdrive(url))
     else:
-        pakka_final_urls.append(utils.final_download_google(url))
+        last_urls.append(utils.final_download_google(url))
 
-print(pakka_final_urls)
+print(last_urls)
 
 
 # TO CHECK IF THE LAST URLS ARE ACTUALLY FROM RESPECTIVE INDEX OF TUPLES
@@ -116,14 +118,3 @@ print(pakka_final_urls)
 #         print(f"true {i+1}st time")
 #     else:
 #         print("wtf")
-
-
-# libgen_results = utils.libgen_search_and_scrape(name=book_name, query='book')
-# if not (libgen_results):
-#     print('No libgen search results for some reason')
-# else: all_books_found += libgen_results
-
-# libgen_results_2 = utils.libgen_search_and_scrape(name=author_name, query='author')
-# if not (libgen_results_2):
-#     print('No libgen search results for some reason')
-# else: all_books_found += libgen_results_2
