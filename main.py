@@ -3,16 +3,23 @@ import utils
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
+import argparse
 
 load_dotenv()
-args = sys.argv
 
-book_name = args[1]
-author_name = args[2]
 
-if args[3] is None:
-    top_scores = 3
-else: top_scores = args[3]
+parser = argparse.ArgumentParser(description='Book Recommendation System')
+parser.add_argument('-b', '--book', type=str, help='Name of the book', required=True)
+parser.add_argument('-a', '--author', type=str, help='Name of the author', required=True)
+parser.add_argument('-s', '--top_scores', type=int, nargs='?', default=3, help='Number of top scores (default is 3)')
+
+# Parse the command-line arguments
+args = parser.parse_args()
+
+book_name = args.book
+author_name = args.author
+top_scores = args.top_scores
+
 
 all_books_found = []
 main_book = []
@@ -118,3 +125,5 @@ print(last_urls)
 #         print(f"true {i+1}st time")
 #     else:
 #         print("wtf")
+
+
