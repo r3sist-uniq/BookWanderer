@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Request Form</title>
+  </head>
+  <body>
+    <h1>Search for Book Links</h1>
+    <form id="api-form" onsubmit="search(event)">
+      <label for="book-name">Book Name:</label>
+      <input type="text" name="book_name" id="book-name" required /><br /><br />
+
+      <label for="author-name">Author Name:</label>
+      <input
+        type="text"
+        name="author_name"
+        id="author-name"
+        required
+      /><br /><br />
+
+      <label for="top-links">Top Links:</label>
+      <input
+        type="number"
+        name="top_links"
+        id="top-links"
+        required
+        min="1"
+        max="10"
+      /><br /><br />
+
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="loading" style="display: none">Loading...</div>
+    <div id="results"></div>
+
+    <script>
+      function search(event) {
+        event.preventDefault();
+        const form = document.getElementById("api-form");
+        const formData = new FormData(form);
+        const url = "/links";
+
+        document.getElementById("loading").style.display = "block";
+
+        fetch(url + "?" + new URLSearchParams(formData).toString(), {
+          method: "GET",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("loading").style.display = "none";
+            const links = data.links;
+            let result = "<h2>Links:</h2><ul>";
+            for (let i = 0; i < links.length; i++) {
+              result +=
+                "<li><a href='" + links[i] + "'>" + links[i] + "</a></li>";
+            }
+            result += "</ul>";
+            document.getElementById("results").innerHTML = result;
+          })
+          .catch((error) => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("results").innerHTML =
+              "<p>Error: " + error.message + "</p>";
+          });
+      }
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
+    />
+  </body>
+</html>
