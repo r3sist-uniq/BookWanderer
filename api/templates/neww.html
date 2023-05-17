@@ -1,0 +1,98 @@
+<html>
+<head>
+  <title>Book Wanderer</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>Book Wanderer</h1>
+    </div>
+
+    <div id="content">
+      <h2>download (almost) any book</h2>
+      <p class="alert alert-info">
+        Enter the book name, author name, and the number of links you need. Click the <strong>Download</strong> button to generate the links.
+      </p>
+      <form class="form" id="downloadForm">
+        <div class="form-group">
+          <label for="bookName">Book Name:</label>
+          <input class="form-control" type="text" name="bookName" id="bookName">
+        </div>
+
+        <div class="form-group">
+          <label for="authorName">Author Name:</label>
+          <input class="form-control" type="text" name="authorName" id="authorName">
+        </div>
+
+        <div class="form-group">
+          <label for="numLinks">Number of Links:</label>
+          <input class="form-control" type="number" name="numLinks" id="numLinks" min="1" step="1">
+        </div>
+
+        <div class="form-group">
+          <button class="download btn btn-default pull-right" onclick="generateLinks()">Download</button>
+        </div>
+      </form>
+
+      <div id="loading" style="display: none;">
+        <h3>Loading...</h3>
+        <img src="loading.gif" alt="Loading">
+      </div>
+      
+      <div id="results" style="display: none;">
+        <h3>Download Links</h3>
+        <ul id="links" class="list-group">
+        </ul>
+      </div>
+    </div>
+
+    <footer style="text-align: center; margin-top: 20px; margin-bottom: 10px;">
+      &copy; 2023 by Your Book Downloading Site
+    </footer>
+  </div>
+
+  <style>
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    function generateLinks() {
+      // Disable the form elements
+      $('#downloadForm input, #downloadForm button').prop('disabled', true);
+
+      // Show the loading screen
+      $('#content').hide();
+      $('#loading').show();
+
+      // Simulate an asynchronous request to the server to generate the links
+      setTimeout(function() {
+        // Retrieve form values
+        var bookName = $('#bookName').val();
+        var authorName = $('#authorName').val();
+        var numLinks = parseInt($('#numLinks').val());
+
+        // Generate the download links
+        var links = [];
+        for (var i = 1; i <= numLinks; i++) {
+            links.push('<a href="http://example.com/book/' + i + '">' + bookName + ' by ' + authorName + ' - Download ' + i + '</a>');
+            }   
+            // Update the UI with the download links
+            $('#links').html(links.join(''));
+            $('#loading').hide();
+            $('#results').show();
+        }, 2000); // Simulate a 2-second delay
+
+        return false; // Prevent form submission
+        }
+
+        </script>
+        </body>
+        </html>
+
+
+

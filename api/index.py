@@ -14,7 +14,6 @@ def search_books():
         return jsonify({'error': 'Please send the correct URL params!'}), 400
     
     links_found, similarity_scores = search_links.search_links(book_name=book_name, author_name=author_name, top_scores=number_of_links)
-    print(type(similarity_scores))
     if not links_found == False:
         return jsonify({'links': links_found, 'similarity_scores': similarity_scores})
     else:
@@ -22,7 +21,7 @@ def search_books():
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('neww.html')
 
 if __name__ == '__main__':
     app.run(port=5000)

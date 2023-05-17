@@ -1,0 +1,190 @@
+<html>
+<head>
+  <title>Book Downloading Site</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #000;
+      border: 2px solid #fff;
+      box-sizing: border-box;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0;
+      padding: 0;
+    }
+
+    #content {
+      margin-bottom: 40px;
+    }
+
+    .alert {
+      padding: 10px;
+      background-color: #00ff00;
+      color: #000;
+    }
+
+    .form-control {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #fff;
+    }
+
+    .btn-default {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      transition: all 0.3s ease;
+    }
+
+    .btn-default:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    #loading {
+      text-align: center;
+      display: none;
+      margin-bottom: 40px;
+    }
+
+    #results {
+      display: none;
+      margin-bottom: 40px;
+    }
+
+    .list-group {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .list-group-item {
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      margin-bottom: 10px;
+      padding: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .list-group-item:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>Book Downloading Site</h1>
+    </div>
+
+    <div id="content">
+      <h2>Download Books</h2>
+      <p class="alert">
+        Enter the book name, author name, and the number of links you need. Click the <strong>Download</strong> button to generate the links.
+      </p>
+      <form class="form" id="downloadForm">
+        <div class="form-group">
+          <label for="bookName">Book Name:</label>
+          <input class="form-control" type="text" name="bookName" id="bookName">
+        </div>
+
+        <div class="form-group">
+          <label for="authorName">Author Name:</label>
+          <input class="form-control" type="text" name="authorName" id="authorName">
+        </div>
+
+        <div class="form-group">
+          <label for="numLinks">Number of Links:</label>
+          <input class="form-control" type="number" name="numLinks" id="numLinks" min="1" step="1">
+        </div>
+
+        <div class=" form-group">
+            <button class="download btn btn-default" onclick="generateLinks()">Download</button>
+            </div>
+            </form>
+
+            <div id="loading">
+                <h3>Loading...</h3>
+                <img src="loading.gif" alt="Loading">
+              </div>
+            
+              <div id="results">
+                <h3>Download Links</h3>
+                <ul id="links" class="list-group">
+                </ul>
+              </div>
+            </div>
+            
+            <footer>
+              &copy; 2023 by Your Book Downloading Site
+            </footer>
+
+
+        </div>
+        <script>
+          function generateLinks() {
+            // Disable the form elements
+            var formElements = document.querySelectorAll('#downloadForm input, #downloadForm button');
+            for (var i = 0; i < formElements.length; i++) {
+              formElements[i].setAttribute('disabled', 'disabled');
+            }
+      
+            // Show the loading screen
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+      
+            // Simulate an asynchronous request to the server to generate the links
+            setTimeout(function() {
+              // Retrieve form values
+              var bookName = document.getElementById('bookName').value;
+              var authorName = document.getElementById('authorName').value;
+              var numLinks = parseInt(document.getElementById('numLinks').value);
+      
+              // Generate the download links
+              var links = [];
+              for (var i = 1; i <= numLinks; i++) {
+                var link = document.createElement('a');
+                link.href = 'http://example.com/book/' + i;
+                link.innerHTML = bookName + ' by ' + authorName + ' - Download ' + i;
+                var listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.appendChild(link);
+                document.getElementById('links').appendChild(listItem);
+              }
+      
+              // Hide the loading screen and show the results
+              document.getElementById('loading').style.display = 'none';
+              document.getElementById('results').style.display = 'block';
+            }, 2000); // Simulate a 2-second delay
+      
+            return false; // Prevent form submission
+          }
+        </script>
+      </body>
+      </html>
+
+      
